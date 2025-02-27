@@ -17,8 +17,8 @@ class _HomePageState extends State<HomePage> {
 
   static final List<Widget> _pages = [
     HomeScreen(),
-    StatsScreen(),
-    SettingsPage(),
+    MetricsScreen(),
+    SettingsScreen(),
   ];
 
   void _onItemTapped(int index) {

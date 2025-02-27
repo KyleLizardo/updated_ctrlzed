@@ -30,14 +30,16 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  fl_chart: ^0.35.0
+  fl_chart: ^0.66.0
   table_calendar: ^3.0.0
   provider: ^6.0.5
-  shared_preferences: ^2.2.0
+  shared_preferences: ^2.2.2
   geolocator: ^10.1.0
   flutter_map: ^6.1.0
   latlong2: ^0.9.0
   http: ^1.2.0
+  just_audio: ^0.9.36
+  intl: ^0.18.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -64,9 +66,10 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  # Comment out or remove the assets section
-  # assets:
-  #   - assets/profile_picture.jpg
+  # Assets section
+  assets:
+    - assets/images/greenribbon.png # Note: Use exact filename with correct case
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -93,3 +96,8 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+  # Remove or comment out the assets section for now
+  # assets:
+  #   - assets/audio/
+  #   - assets/images/
