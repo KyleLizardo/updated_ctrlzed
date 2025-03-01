@@ -14,11 +14,63 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
+class StressLabel extends StatelessWidget {
+  final String label;
+  final String range;
+
+  const StressLabel({super.key, required this.label, required this.range});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(fontSize: 16),
+        ),
+        Text(
+          range,
+          style: const TextStyle(fontSize: 12, color: Colors.grey),
+        ),
+      ],
+    );
+  }
+}
+
 class _HomeScreenState extends State<HomeScreen> {
   List<Task> tasks = [];
   static const String TASKS_KEY = 'tasks';
   late double screenWidth;
   late double screenHeight;
+  final List<String> moods = [
+    'Happy',
+    'Fearful',
+    'Excited',
+    'Angry',
+    'Calm',
+    'Pain',
+    'Boredom',
+    'Sad',
+    'Awe',
+    'Confused',
+    'Anxious',
+    'Relief',
+    'Satisfied'
+  ];
+  final Set<String> selectedMoods = {};
+  double stressLevel = 3;
+  final Map<String, bool> symptoms = {
+    'Rapid heartbeat': false,
+    'Shortness of breath': false,
+    'Dizziness': false,
+    'Headache': false,
+    'Fatigue': false,
+    'Sweating': false,
+    'Muscle tension': false,
+    'Nausea': false,
+    'Shaking or trembling': false,
+  };
 
   @override
   void initState() {
@@ -158,6 +210,285 @@ class _HomeScreenState extends State<HomeScreen> {
                         childCount: tasks.length,
                       ),
                     ),
+            ),
+
+            // Trackers Section
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Express Your Feelings',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[800],
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    GridView.count(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                      children: [
+                        _buildBottomSheetItem(
+                          context,
+                          'Mood Tracker',
+                          Icons.mood,
+                          Colors.blue,
+                          _showMoodTracker,
+                        ),
+                        _buildBottomSheetItem(
+                          context,
+                          'Stress Level Rating',
+                          Icons.sentiment_very_dissatisfied,
+                          Colors.red,
+                          _showStressTracker,
+                        ),
+                        _buildBottomSheetItem(
+                          context,
+                          'Physical Symptoms',
+                          Icons.healing,
+                          Colors.green,
+                          _showPhysicalSymptomsTracker,
+                        ),
+                        _buildBottomSheetItem(
+                          context,
+                          'Activities Tracker',
+                          Icons.directions_run,
+                          Colors.orange,
+                          _showActivitiesTracker,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showMoodTracker() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Center(
+                    child: Text(
+                      'Mood Tracker',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: moods.map((mood) {
+                      return ChoiceChip(
+                        label: Text(mood),
+                        selected: selectedMoods.contains(mood),
+                        selectedColor: Colors.green,
+                        onSelected: (bool selected) {
+                          setState(() {
+                            if (selected) {
+                              selectedMoods.add(mood);
+                            } else {
+                              selectedMoods.remove(mood);
+                            }
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showStressTracker() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Center(
+                    child: Text(
+                      'Stress Tracker',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: const [
+                          StressLabel(label: 'Extreme Stress', range: '9-10'),
+                          StressLabel(label: 'High Stress', range: '7-8'),
+                          StressLabel(label: 'Moderate Stress', range: '4-6'),
+                          StressLabel(label: 'Low Stress', range: '3-4'),
+                          StressLabel(label: 'StressLess', range: '<3'),
+                        ],
+                      ),
+                      const SizedBox(width: 20),
+                      SizedBox(
+                        height: 300,
+                        child: RotatedBox(
+                          quarterTurns: -1,
+                          child: Slider(
+                            value: stressLevel,
+                            min: 0,
+                            max: 10,
+                            divisions: 10,
+                            activeColor: Colors.orange,
+                            onChanged: (double value) {
+                              setState(() {
+                                stressLevel = value;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: const [
+                          Icon(Icons.sentiment_very_dissatisfied,
+                              color: Colors.purple, size: 40),
+                          Icon(Icons.sentiment_dissatisfied,
+                              color: Colors.red, size: 40),
+                          Icon(Icons.sentiment_neutral,
+                              color: Colors.brown, size: 40),
+                          Icon(Icons.sentiment_satisfied,
+                              color: Colors.amber, size: 40),
+                          Icon(Icons.sentiment_very_satisfied,
+                              color: Colors.green, size: 40),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showPhysicalSymptomsTracker() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Physical Symptoms',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  ...symptoms.keys.map((symptom) => CheckboxListTile(
+                        title: Text(symptom),
+                        value: symptoms[symptom],
+                        onChanged: (bool? value) {
+                          setState(() {
+                            symptoms[symptom] = value!;
+                          });
+                        },
+                        secondary: const Icon(Icons.local_hospital),
+                      )),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showActivitiesTracker() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              Center(
+                child: Text(
+                  'Activities Tracker',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+              SizedBox(height: 20),
+              Text('Activities content goes here...'),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildBottomSheetItem(BuildContext context, String title,
+      IconData icon, Color color, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(screenWidth * 0.05),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(screenWidth * 0.05),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: color, size: screenWidth * 0.1),
+            SizedBox(height: screenHeight * 0.01),
+            Text(
+              title,
+              style: TextStyle(
+                color: color,
+                fontSize: screenWidth * 0.04,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
