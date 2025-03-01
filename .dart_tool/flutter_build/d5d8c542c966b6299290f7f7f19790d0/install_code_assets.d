@@ -1,0 +1,1 @@
+ C:\\Users\\MSI\ Bravo\\Documents\\a\\AnxieEase-1\\.dart_tool\\flutter_build\\d5d8c542c966b6299290f7f7f19790d0\\native_assets.json: 
